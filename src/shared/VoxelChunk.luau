@@ -7,8 +7,8 @@ VoxelChunk.__index = VoxelChunk
 type VoxelChunkData = {
     Data : buffer
 }
+
 export type VoxelChunk = typeof(setmetatable({} :: VoxelChunkData, VoxelChunk))
-type Self = VoxelChunk
 
 
 local CHUNK_SIZE_MAX : Vector3int16 = Vector3int16.new(16, 64, 16)
@@ -64,5 +64,6 @@ function VoxelChunk.SetBlock(self : Self, pos : Vector3int16, block : number)
 end
 
 
+type Self = VoxelChunk
 
 return VoxelChunk
