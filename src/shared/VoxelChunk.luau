@@ -7,7 +7,6 @@ VoxelChunk.__index = VoxelChunk
 type VoxelChunkData = {
     Data : buffer
 }
-
 export type VoxelChunk = typeof(setmetatable({} :: VoxelChunkData, VoxelChunk))
 
 
@@ -17,14 +16,16 @@ local BLOCK_BYTE_SIZE = 1
 
 
 function VoxelChunk.new() : VoxelChunk
-    local self = setmetatable({}, VoxelChunk)
+    local self = {}
     self.Data = buffer.create(CHUNK_BUFFER_LENGTH * BLOCK_BYTE_SIZE)
-    return self
+
+    return setmetatable(self, VoxelChunk)
 end
 
 function VoxelChunk.fromBuffer(buf : buffer) : VoxelChunk
     local self = setmetatable({}, VoxelChunk)
     self.Data = buf
+
     return self
 end
 
@@ -53,17 +54,14 @@ end
 
 
 
-function VoxelChunk.GetBlock(self : Self, pos : Vector3int16) : number
+function VoxelChunk.GetBlock(self : VoxelChunk, pos : Vector3int16) : number
     local index = _positionTo1d(pos)
     return buffer.readu8(self.Data, index)
 end
 
-function VoxelChunk.SetBlock(self : Self, pos : Vector3int16, block : number)
+function VoxelChunk.SetBlock(self : VoxelChunk, pos : Vector3int16, block : number)
     local index = _positionTo1d(pos)
     return buffer.writeu8(self.Data, index, block)
 end
-
-
-type Self = VoxelChunk
 
 return VoxelChunk
