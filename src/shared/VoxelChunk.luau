@@ -45,7 +45,7 @@ end
 local function _positionTo1d(pos : Vector3int16) : number
 
     if not _isPositionInBounds(pos) then
-        error(string.format("specified position %* is out of bounds in VoxelChunk", pos))
+        error(string.format("specified position [%*] is out of bounds in VoxelChunk", pos))
     end
 
     return (pos.X + CHUNK_SIZE_MAX.X * (pos.Y + CHUNK_SIZE_MAX.Y * pos.Z)) * BLOCK_BYTE_SIZE
