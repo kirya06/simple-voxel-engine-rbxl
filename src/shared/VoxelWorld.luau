@@ -47,6 +47,7 @@ end
 
 function VoxelWorld.SetChunk(self : VoxelWorld, pos : Vector2int16, chunk : VoxelChunk.VoxelChunk)
     self._chunks[_vector2ToHash(pos)] = chunk
+    self._updEvent:Fire(pos)
 end
 
 function VoxelWorld.IsChunkLoaded(self : VoxelWorld, pos : Vector2int16) : boolean
