@@ -1,5 +1,7 @@
 --!strict
 
+local VoxelGenerator = require(script.Parent.VoxelGenerator)
+
 local VoxelChunk = require(game:GetService("ReplicatedStorage").Shared.VoxelChunk)
 type VoxelChunk = typeof(VoxelChunk)
 
@@ -11,6 +13,7 @@ export type VoxelWorldData = {
     _chunks : {[string]: VoxelChunk.VoxelChunk?},
     _updEvent : BindableEvent,
 
+    WorldGen : VoxelGenerator.VoxelGenerator,
     OnUpdated : RBXScriptSignal
 }
 export type VoxelWorld = typeof(setmetatable({} :: VoxelWorldData, VoxelWorld))
@@ -25,6 +28,7 @@ function VoxelWorld.new() : VoxelWorld
 
     self._updEvent = Instance.new("BindableEvent")
     self.OnUpdated = self._updEvent.Event
+    self.WorldGen = VoxelGenerator.new()
 
     return setmetatable(self, VoxelWorld)
 end
@@ -51,10 +55,12 @@ function VoxelWorld.GenerateChunk(self : VoxelWorld, pos : Vector2int16)
     if self:IsChunkLoaded(pos) then
         return
     end
-    
-    self._chunks[_vector2ToHash(pos)] = VoxelChunk.new()
+
+    local chunk = VoxelChunk.new()
+    self.WorldGen:Generate(chunk)
+
+    self._chunks[_vector2ToHash(pos)] = chunk
     self._updEvent:Fire(pos)
-    -- TODO: have a generator class for creating worlds and stuff
 end
 
 function VoxelWorld.GenerateChunks(self : VoxelWorld, center : Vector2int16, size : Vector2int16)
@@ -65,12 +71,10 @@ function VoxelWorld.GenerateChunks(self : VoxelWorld, center : Vector2int16, siz
 
             local chunkPos = Vector2int16.new(x, y) + center
             self:GenerateChunk(chunkPos)
-            print(chunkPos)
 
-        end 
+        end
     end
-    
-    print(self._chunks)
+
 end
 
 
@@ -79,18 +83,12 @@ function VoxelWorld.GetChunks(self : VoxelWorld, center : Vector2int16, size : V
 
     local chunks : {[Vector2int16]: VoxelChunk.VoxelChunk?} = {}
 
-    for i, v in pairs(self._chunks) do
-        print(i)
-    end
-
     for x = -size.X + 1, size.X - 1, 1 do
         for y = -size.Y + 1, size.Y - 1, 1 do
 
             local chunkPos = Vector2int16.new(x, y) + center
-            -- print(chunkPos)
 
             if self:IsChunkLoaded(chunkPos) then
-                -- print("yeah")
                 chunks[chunkPos] = self:GetChunk(chunkPos)
             end
 
