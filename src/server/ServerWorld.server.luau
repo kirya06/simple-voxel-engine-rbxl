@@ -1,5 +1,6 @@
 --!strict
 
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local VoxelWorld = require(ReplicatedStorage.Shared.VoxelWorld)
@@ -12,8 +13,21 @@ local INITIAL_GENERATION_SIZE = Vector2int16.new(1, 1) * INITIAL_GENERATION_RADI
 local world : VoxelWorld.VoxelWorld = VoxelWorld.new()
 world:GenerateChunks(INITIAL_GENERATION_CENTER, INITIAL_GENERATION_SIZE)
 
-task.wait(1.5)
+Players.PlayerAdded:Connect(function(player : Player)
 
-ChunkUpdateRemote:FireAllClients(
-    world:GetChunks(INITIAL_GENERATION_CENTER, INITIAL_GENERATION_SIZE)
-);
+    ChunkUpdateRemote:FireClient(
+        player,
+        world:GetChunks(INITIAL_GENERATION_CENTER, INITIAL_GENERATION_SIZE)
+    );
+
+end)
+
+world.OnUpdated:Connect(function(chunk : Vector2int16)
+    -- TODO: maybe send only some clients chunk updates, and ignore others just cause they're too far, have no character etc.
+    local players = Players:GetPlayers()
+
+    for i, plr in pairs(players) do
+        ChunkUpdateRemote:FireClient(plr, {[chunk] = world:GetChunk(chunk)})
+    end
+
+end)

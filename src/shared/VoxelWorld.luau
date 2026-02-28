@@ -8,7 +8,10 @@ VoxelWorld.__index = VoxelWorld
 
 
 export type VoxelWorldData = {
-    _chunks : {[string]: VoxelChunk.VoxelChunk?}
+    _chunks : {[string]: VoxelChunk.VoxelChunk?},
+    _updEvent : BindableEvent,
+
+    OnUpdated : RBXScriptSignal
 }
 export type VoxelWorld = typeof(setmetatable({} :: VoxelWorldData, VoxelWorld))
 
@@ -20,11 +23,15 @@ function VoxelWorld.new() : VoxelWorld
     local self = {}
     self._chunks = {}
 
+    self._updEvent = Instance.new("BindableEvent")
+    self.OnUpdated = self._updEvent.Event
+
     return setmetatable(self, VoxelWorld)
 end
 
 
 local function _vector2ToHash(vector : Vector2int16) : string
+    -- this is horrible but i have more important stuff to do rather than trying to create a good int hash based on vector2 with no collisions
     return tostring(vector)
 end
 
@@ -46,7 +53,7 @@ function VoxelWorld.GenerateChunk(self : VoxelWorld, pos : Vector2int16)
     end
     
     self._chunks[_vector2ToHash(pos)] = VoxelChunk.new()
-
+    self._updEvent:Fire(pos)
     -- TODO: have a generator class for creating worlds and stuff
 end
 
@@ -93,6 +100,16 @@ function VoxelWorld.GetChunks(self : VoxelWorld, center : Vector2int16, size : V
     return chunks
 end
 
+
+function VoxelWorld.GetChunkFromWorldPosition(self : VoxelWorld, pos : Vector3) : Vector2int16
+    local chunkSize = VoxelChunk.ChunkSize
+
+    local vector2Pos = Vector2.new(pos.X, pos.Z)
+    vector2Pos /= BLOCK_STUD_SIZE
+    vector2Pos /= Vector2.new(chunkSize.X, chunkSize.Z)
+
+    return Vector2int16.new(math.floor(vector2Pos.X), math.floor(vector2Pos.Y))
+end
 
 
 function VoxelWorld.GetBlock(self : VoxelWorld, pos : Vector2int16)
