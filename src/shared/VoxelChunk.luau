@@ -15,6 +15,7 @@ local CHUNK_SIZE_MAX : Vector3int16 = Vector3int16.new(16, 64, 16)
 local CHUNK_BUFFER_LENGTH = CHUNK_SIZE_MAX.X * CHUNK_SIZE_MAX.Y * CHUNK_SIZE_MAX.Z
 local BLOCK_BYTE_SIZE = 1
 
+VoxelChunk.ChunkSize = CHUNK_SIZE_MAX
 
 function VoxelChunk.new(position : Vector2int16?) : VoxelChunk
     local self = {}
