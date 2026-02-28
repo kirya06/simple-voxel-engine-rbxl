@@ -10,16 +10,14 @@ type VoxelChunkData = {
 }
 export type VoxelChunk = typeof(setmetatable({} :: VoxelChunkData, VoxelChunk))
 
-
-local CHUNK_SIZE_MAX : Vector3int16 = Vector3int16.new(16, 64, 16)
-local CHUNK_BUFFER_LENGTH = CHUNK_SIZE_MAX.X * CHUNK_SIZE_MAX.Y * CHUNK_SIZE_MAX.Z
 local BLOCK_BYTE_SIZE = 1
 
-VoxelChunk.ChunkSize = CHUNK_SIZE_MAX
+VoxelChunk.CHUNK_SIZE = Vector3int16.new(16, 64, 16)
+VoxelChunk.CHUNK_BUFFER_LENGTH = VoxelChunk.CHUNK_SIZE.X * VoxelChunk.CHUNK_SIZE.Y * VoxelChunk.CHUNK_SIZE.Z
 
 function VoxelChunk.new(position : Vector2int16?) : VoxelChunk
     local self = {}
-    self.Data = buffer.create(CHUNK_BUFFER_LENGTH * BLOCK_BYTE_SIZE)
+    self.Data = buffer.create(VoxelChunk.CHUNK_BUFFER_LENGTH * BLOCK_BYTE_SIZE)
     self.Position = position or Vector2int16.new()
 
     return setmetatable(self, VoxelChunk)
@@ -40,7 +38,7 @@ local function _isPositionInBounds(position : Vector3int16) : boolean
         return false
     end
 
-    if position.X > CHUNK_SIZE_MAX.X or position.Y > CHUNK_SIZE_MAX.Y or position.Z > CHUNK_SIZE_MAX.Z then
+    if position.X > VoxelChunk.CHUNK_SIZE.X or position.Y > VoxelChunk.CHUNK_SIZE.Y or position.Z > VoxelChunk.CHUNK_SIZE.Z then
         return false
     end
 
@@ -53,7 +51,7 @@ local function _positionTo1d(pos : Vector3int16) : number
         error(string.format("specified position [%*] is out of bounds in VoxelChunk", pos))
     end
 
-    return (pos.X + CHUNK_SIZE_MAX.X * (pos.Y + CHUNK_SIZE_MAX.Y * pos.Z)) * BLOCK_BYTE_SIZE
+    return (pos.X + VoxelChunk.CHUNK_SIZE.X * (pos.Y + VoxelChunk.CHUNK_SIZE.Y * pos.Z)) * BLOCK_BYTE_SIZE
 end
 
 

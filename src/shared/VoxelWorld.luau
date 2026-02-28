@@ -18,8 +18,8 @@ export type VoxelWorldData = {
 }
 export type VoxelWorld = typeof(setmetatable({} :: VoxelWorldData, VoxelWorld))
 
-
-local BLOCK_STUD_SIZE = 3.5714285714
+-- equivalent to 1 meter in studs
+VoxelWorld.BLOCK_SCALE = 3.5714285714
 
 
 function VoxelWorld.new() : VoxelWorld
@@ -100,10 +100,10 @@ end
 
 
 function VoxelWorld.GetChunkFromWorldPosition(self : VoxelWorld, pos : Vector3) : Vector2int16
-    local chunkSize = VoxelChunk.ChunkSize
+    local chunkSize = VoxelChunk.CHUNK_SIZE
 
     local vector2Pos = Vector2.new(pos.X, pos.Z)
-    vector2Pos /= BLOCK_STUD_SIZE
+    vector2Pos /= self.BLOCK_SCALE
     vector2Pos /= Vector2.new(chunkSize.X, chunkSize.Z)
 
     return Vector2int16.new(math.floor(vector2Pos.X), math.floor(vector2Pos.Y))
