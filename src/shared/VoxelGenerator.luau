@@ -22,8 +22,8 @@ function VoxelGenerator.new(seed : number?) : VoxelGenerator
 end
 
 function VoxelGenerator:Generate(chunk : VoxelChunk.VoxelChunk)
-    for x = 0, chunk.ChunkSize.X - 1, 1 do
-        for z = 0, chunk.ChunkSize.Z - 1, 1 do
+    for x = 0, chunk.CHUNK_SIZE.X - 1, 1 do
+        for z = 0, chunk.CHUNK_SIZE.Z - 1, 1 do
             chunk:SetBlock(Vector3int16.new(x, 0, z), 1)
         end
     end

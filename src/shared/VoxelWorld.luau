@@ -45,6 +45,9 @@ function VoxelWorld.GetChunk(self : VoxelWorld, pos : Vector2int16) : VoxelChunk
     return chunk
 end
 
+function VoxelWorld.SetChunk(self : VoxelWorld, pos : Vector2int16, chunk : VoxelChunk.VoxelChunk)
+    self._chunks[_vector2ToHash(pos)] = chunk
+end
 
 function VoxelWorld.IsChunkLoaded(self : VoxelWorld, pos : Vector2int16) : boolean
     return self:GetChunk(pos) ~= nil
