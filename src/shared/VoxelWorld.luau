@@ -60,7 +60,7 @@ function VoxelWorld.GenerateChunk(self : VoxelWorld, pos : Vector2int16)
         return
     end
 
-    local chunk = VoxelChunk.new()
+    local chunk = VoxelChunk.new(pos)
     self.WorldGen:Generate(chunk)
 
     self._chunks[_vector2ToHash(pos)] = chunk
