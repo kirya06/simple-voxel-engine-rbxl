@@ -35,7 +35,7 @@ end
 
 
 local function _vector2ToHash(vector : Vector2int16) : string
-    -- this is horrible but i have more important stuff to do rather than trying to create a good int hash based on vector2 with no collisions
+    -- this is horrible but i have more important stuff to do rather than trying to create a good int hash that is based on vector2 with no collisions
     return tostring(vector)
 end
 
