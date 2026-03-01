@@ -22,12 +22,13 @@ Players.PlayerAdded:Connect(function(player : Player)
 
 end)
 
-world.OnUpdated:Connect(function(chunk : Vector2int16)
+world.OnUpdated:Connect(function(pos : Vector2int16)
     -- TODO: maybe send only some clients chunk updates, and ignore others just cause they're too far, have no character etc.
     local players = Players:GetPlayers()
+    local chunk = world:GetChunk(pos)
+    assert(chunk ~= nil)
 
     for i, plr in pairs(players) do
-        ChunkUpdateRemote:FireClient(plr, {[chunk] = world:GetChunk(chunk)})
+        ChunkUpdateRemote:FireClient(plr, {[chunk] = chunk})
     end
-
 end)
