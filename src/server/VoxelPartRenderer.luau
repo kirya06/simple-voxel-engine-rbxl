@@ -56,6 +56,9 @@ function VoxelPartRenderer.GenerateChunk(self : VoxelPartRenderer, chunk : Voxel
 
                 part.Size = size
                 part.Position = pos
+
+                part.BrickColor = BrickColor.Green()
+                part.Material = Enum.Material.SmoothPlastic
                 part.TopSurface = Enum.SurfaceType.Smooth
 
                 part.Parent = model

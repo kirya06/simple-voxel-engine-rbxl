@@ -61,7 +61,7 @@ function VoxelWorld.GenerateChunk(self : VoxelWorld, pos : Vector2int16)
     end
 
     local chunk = VoxelChunk.new(pos)
-    self.WorldGen.Generate(chunk)
+    self.WorldGen:Generate(chunk)
 
     self._chunks[_vector2ToHash(pos)] = chunk
     self._updEvent:Fire(pos)
