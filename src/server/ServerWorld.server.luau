@@ -12,9 +12,7 @@ local INITIAL_GENERATION_CENTER = Vector2int16.new(0, 0)
 local INITIAL_GENERATION_SIZE = Vector2int16.new(1, 1) * INITIAL_GENERATION_RADIUS
 
 local world : VoxelWorld.VoxelWorld = VoxelWorld.new()
-
-
-local partRenderer = VoxelPartRenderer.new()
+local partRenderer : VoxelPartRenderer.VoxelPartRenderer = VoxelPartRenderer.new()
 
 Players.PlayerAdded:Connect(function(player : Player)
 
