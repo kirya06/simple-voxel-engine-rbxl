@@ -26,6 +26,9 @@ function VoxelPartRenderer.new() : VoxelPartRenderer
     return setmetatable(self, VoxelPartRenderer)
 end
 
+function VoxelPartRenderer.IsChunkActive(self : VoxelPartRenderer, pos : Vector2int16) : boolean
+    return self._models[tostring(pos)] ~= nil
+end
 
 function VoxelPartRenderer.BuildChunk(self : VoxelPartRenderer, chunk : VoxelChunk.VoxelChunk)
 
@@ -76,5 +79,19 @@ function VoxelPartRenderer.BuildChunk(self : VoxelPartRenderer, chunk : VoxelChu
     model.Parent = self._folder
 end
 
+
+function VoxelPartRenderer.RemoveUnusedChunks(self : VoxelPartRenderer, usedChunks : {Vector2int16})
+    local chunksToDelete = table.clone(self._models)
+
+    for i, pos in pairs(usedChunks) do
+        chunksToDelete[tostring(pos)] = nil
+    end
+
+    for i, model in pairs(chunksToDelete) do
+        self._models[i] = nil
+        model:Destroy()
+    end
+
+end
 
 return VoxelPartRenderer

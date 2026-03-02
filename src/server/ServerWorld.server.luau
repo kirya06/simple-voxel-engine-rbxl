@@ -14,20 +14,28 @@ local world : VoxelWorld.VoxelWorld = VoxelWorld.new()
 world.WorldGen.Seed = math.random(-2147483647, 2147483647)
 local partRenderer : VoxelPartRenderer.VoxelPartRenderer = VoxelPartRenderer.new()
 
-world.OnUpdated:Connect(function(pos : Vector2int16)
+
+world.OnManualUpdated:Connect(function(pos : Vector2int16)
+    if not partRenderer:IsChunkActive(pos) then
+        return
+    end
+
     local chunk = world:GetChunk(pos)
     assert(chunk ~= nil)
 
     partRenderer:BuildChunk(chunk)
 end)
 
+-- rendering
 RunService.Heartbeat:Connect(function()
+
     local players = Players:GetPlayers()
     local genSize = Vector2int16.new(GENERATION_DISTANCE, GENERATION_DISTANCE)
 
     local activeChunks : {Vector2int16} = {}
 
     for i, plr in pairs(players) do
+
         local char = plr.Character
 
         if not char then
@@ -42,8 +50,19 @@ RunService.Heartbeat:Connect(function()
             table.insert(activeChunks, chunk.Position)
         end
 
-        world:GenerateChunks(playerChunkPos, genSize)
+        local chunks = world:GetChunks(playerChunkPos, genSize, true)
+        for i, chunk in pairs(chunks) do
+            assert(chunk ~= nil)
+
+            if not partRenderer:IsChunkActive(chunk.Position) then
+                partRenderer:BuildChunk(chunk)
+            end
+        end
+
     end
+
+    partRenderer:RemoveUnusedChunks(activeChunks)
+
 end)
 
 

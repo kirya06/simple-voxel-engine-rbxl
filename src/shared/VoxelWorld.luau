@@ -12,9 +12,14 @@ VoxelWorld.__index = VoxelWorld
 export type VoxelWorldData = {
     _chunks : {[string]: VoxelChunk.VoxelChunk?},
     _updEvent : BindableEvent,
+    _updEventNonGen : BindableEvent,
 
     WorldGen : VoxelGenerator.VoxelGenerator,
-    OnUpdated : RBXScriptSignal
+
+    -- fired on every chunk update including generation, player blocks etc. Arguments: pos (Vector2int16)
+    OnUpdated : RBXScriptSignal,
+    -- fired only when chunk is changed manually via SetBlock/SetChunk. Arguments: pos (Vector2int16)
+    OnManualUpdated : RBXScriptSignal
 }
 export type VoxelWorld = typeof(setmetatable({} :: VoxelWorldData, VoxelWorld))
 
@@ -27,7 +32,10 @@ function VoxelWorld.new() : VoxelWorld
     self._chunks = {}
 
     self._updEvent = Instance.new("BindableEvent")
+    self._updEventNonGen = Instance.new("BindableEvent")
+
     self.OnUpdated = self._updEvent.Event
+    self.OnManualUpdated = self._updEventNonGen.Event
     self.WorldGen = VoxelGenerator.new()
 
     return setmetatable(self, VoxelWorld)
@@ -82,7 +90,12 @@ function VoxelWorld.GenerateChunks(self : VoxelWorld, center : Vector2int16, siz
 end
 
 
-function VoxelWorld.GetChunks(self : VoxelWorld, center : Vector2int16, size : Vector2int16) : {[Vector2int16]: VoxelChunk.VoxelChunk?}
+function VoxelWorld.GetChunks(self : VoxelWorld, center : Vector2int16, size : Vector2int16, generateChunks : boolean?) : {[Vector2int16]: VoxelChunk.VoxelChunk?}
+
+    if generateChunks then
+        self:GenerateChunks(center, Vector2int16.new(size.X, size.Y))
+    end
+
     size /= 2
 
     local chunks : {[Vector2int16]: VoxelChunk.VoxelChunk?} = {}
