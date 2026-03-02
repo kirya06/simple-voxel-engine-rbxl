@@ -1,6 +1,7 @@
 --!strict
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local VoxelPartCache = require(script.Parent.VoxelPartCache)
 local BlockType = require(ReplicatedStorage.Shared.BlockType)
 local VoxelChunk = require(ReplicatedStorage.Shared.VoxelChunk)
 local VoxelWorld = require(ReplicatedStorage.Shared.VoxelWorld)
@@ -11,7 +12,9 @@ VoxelPartRenderer.__index = VoxelPartRenderer
 
 type VoxelPartRendererData = {
     _models : {["string"] : Model?},
-    _folder : Folder
+    _folder : Folder,
+
+    Cache : VoxelPartCache.VoxelPartCache
 }
 export type VoxelPartRenderer = typeof(setmetatable({} :: VoxelPartRendererData, VoxelPartRenderer))
 
@@ -23,7 +26,20 @@ function VoxelPartRenderer.new() : VoxelPartRenderer
     self._folder.Name = "Voxel"
     self._folder.Parent = game:GetService("Workspace")
 
+    -- much more than we need but just incase
+    self.Cache = VoxelPartCache.new(10000)
+
     return setmetatable(self, VoxelPartRenderer)
+end
+
+function VoxelPartRenderer._pushPartsToCache(self : VoxelPartRenderer, model : Model)
+    for i, part in pairs(model:GetChildren()) do
+        if not part:IsA("Part") then
+            continue
+        end
+
+        self.Cache:Push(part)
+    end
 end
 
 function VoxelPartRenderer.IsChunkActive(self : VoxelPartRenderer, pos : Vector2int16) : boolean
@@ -53,16 +69,17 @@ function VoxelPartRenderer.BuildChunk(self : VoxelPartRenderer, chunk : VoxelChu
                 pos -= size / 2
 
                 
-                local part = Instance.new("Part")
-                part.Name = "Block"
+                local part = self.Cache:Pull()
                 part.Anchored = true
+                part.CanCollide = true
 
                 part.Size = size
                 part.Position = pos
-
+                
                 part.BrickColor = BrickColor.Green()
                 part.Material = Enum.Material.SmoothPlastic
                 part.TopSurface = Enum.SurfaceType.Smooth
+                part.Transparency = 0
 
                 part.Parent = model
 
@@ -72,6 +89,9 @@ function VoxelPartRenderer.BuildChunk(self : VoxelPartRenderer, chunk : VoxelChu
 
     local oldModel = self._models[tostring(chunk.Position)]
     if oldModel ~= nil then
+
+        self:_pushPartsToCache(oldModel)
+
         oldModel:Destroy()
     end
 
@@ -89,6 +109,7 @@ function VoxelPartRenderer.RemoveUnusedChunks(self : VoxelPartRenderer, usedChun
 
     for i, model in pairs(chunksToDelete) do
         self._models[i] = nil
+        self:_pushPartsToCache(model)
         model:Destroy()
     end
 
