@@ -18,7 +18,7 @@ world.OnUpdated:Connect(function(pos : Vector2int16)
     local chunk = world:GetChunk(pos)
     assert(chunk ~= nil)
 
-    partRenderer:GenerateChunk(chunk)
+    partRenderer:BuildChunk(chunk)
 end)
 
 RunService.Heartbeat:Connect(function()

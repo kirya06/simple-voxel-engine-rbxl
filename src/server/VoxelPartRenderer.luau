@@ -27,7 +27,7 @@ function VoxelPartRenderer.new() : VoxelPartRenderer
 end
 
 
-function VoxelPartRenderer.GenerateChunk(self : VoxelPartRenderer, chunk : VoxelChunk.VoxelChunk)
+function VoxelPartRenderer.BuildChunk(self : VoxelPartRenderer, chunk : VoxelChunk.VoxelChunk)
 
     local model = Instance.new("Model")
     model.Name = tostring(chunk.Position)
